@@ -1,2 +1,2 @@
 # ai-engineering-journey
-AI learbing with my tech stack
+AI learning with my tech stack
