@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ChatMessage from "@/components/ChatMessage";
 import ChatInput from "@/components/ChatInput";
 
@@ -22,6 +22,13 @@ export default function Home() {
     //     "React Server Components allow components to render on the server and send the resulting UI to the client.",
     // },
   ]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
 
   async function handleSend(message: string) {
     const userMessage = {
@@ -127,20 +134,17 @@ export default function Home() {
               </p>
             </div>
           ) : (
-            messages.map((message, index) => (
-              <ChatMessage
-                key={index}
-                role={message.role}
-                content={message.content}
-              />
-            ))
-          )}
-          {isLoading && (
-            <div className="mb-4 flex justify-start">
-              <div className="rounded-2xl border bg-white px-4 py-3 text-sm text-gray-500">
-                AI is thinking...
-              </div>
-            </div>
+            <>
+              {messages.map((message, index) => (
+                <ChatMessage
+                  key={index}
+                  role={message.role}
+                  content={message.content}
+                />
+              ))}
+
+              <div ref={messagesEndRef} />
+            </>
           )}
         </section>
         <ChatInput onSend={handleSend} disabled={isLoading} />
