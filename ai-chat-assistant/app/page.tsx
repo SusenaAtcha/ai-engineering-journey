@@ -45,19 +45,51 @@ export default function Home() {
         }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || "Failed to get AI response");
+        throw new Error("Failed to get AI response");
       }
+
+      if (!response.body) {
+        throw new Error("Response body is missing");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      let assistantMessage = "";
 
       setMessages((currentMessages) => [
         ...currentMessages,
         {
           role: "assistant",
-          content: data.response,
+          content: "",
         },
       ]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          break;
+        }
+
+        const chunk = decoder.decode(value, {
+          stream: true,
+        });
+
+        assistantMessage += chunk;
+
+        setMessages((currentMessages) => {
+          const updatedMessages = [...currentMessages];
+
+          updatedMessages[updatedMessages.length - 1] = {
+            role: "assistant",
+            content: assistantMessage,
+          };
+
+          return updatedMessages;
+        });
+      }
     } catch (error) {
       console.error(error);
 
