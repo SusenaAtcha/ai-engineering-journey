@@ -6,17 +6,17 @@ const openai = new OpenAI({
 
 export async function POST(request: Request) {
     try {
-        const { message } = await request.json();
+        const { messages } = await request.json();
 
-        if (!message?.trim()) {
-            return new Response("Message is required", {
+        if (!messages || !Array.isArray(messages) || messages.length === 0) {
+            return new Response("Messages are required", {
                 status: 400,
             });
         }
 
         const stream = await openai.responses.create({
             model: "gpt-5-mini",
-            input: message,
+            input: messages,
             stream: true,
         });
 

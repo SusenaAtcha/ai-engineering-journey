@@ -24,14 +24,14 @@ export default function Home() {
   ]);
 
   async function handleSend(message: string) {
-    setMessages((currentMessages) => [
-      ...currentMessages,
-      {
-        role: "user",
-        content: message,
-      },
-    ]);
+    const userMessage = {
+      role: "user" as const,
+      content: message,
+    };
 
+    const updatedMessages = [...messages, userMessage];
+
+    setMessages(updatedMessages);
     setIsLoading(true);
 
     try {
@@ -41,7 +41,7 @@ export default function Home() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message,
+          messages: updatedMessages,
         }),
       });
 
@@ -80,14 +80,14 @@ export default function Home() {
         assistantMessage += chunk;
 
         setMessages((currentMessages) => {
-          const updatedMessages = [...currentMessages];
+          const updated = [...currentMessages];
 
-          updatedMessages[updatedMessages.length - 1] = {
+          updated[updated.length - 1] = {
             role: "assistant",
             content: assistantMessage,
           };
 
-          return updatedMessages;
+          return updated;
         });
       }
     } catch (error) {
