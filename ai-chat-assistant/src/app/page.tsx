@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import ChatMessage from "@/components/ChatMessage";
-import ChatInput from "@/components/ChatInput";
+import ChatMessage from "@/src/components/ChatMessage";
+import ChatInput from "@/src/components/ChatInput";
 
 type Message = {
   role: "user" | "assistant";
@@ -53,9 +53,12 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to get AI response");
-      }
+        const data = await response.json();
 
+        throw new Error(
+          data.error || "Failed to get AI response"
+        );
+      }
       if (!response.body) {
         throw new Error("Response body is missing");
       }

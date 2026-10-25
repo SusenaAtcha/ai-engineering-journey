@@ -1,3 +1,6 @@
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 type MessageRole = "user" | "assistant";
 
 type ChatMessageProps = {
@@ -24,12 +27,14 @@ export default function ChatMessage({
             : "border bg-white text-gray-900"
         }`}
       >
-        <div className="mb-1 text-xs font-medium opacity-60">
+        <div className="mb-2 text-xs font-medium opacity-60">
           {isUser ? "You" : "AI Assistant"}
         </div>
 
-        <div className="whitespace-pre-wrap text-sm">
-          {content}
+        <div className="prose prose-sm max-w-none">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {content}
+          </ReactMarkdown>
         </div>
       </div>
     </div>
