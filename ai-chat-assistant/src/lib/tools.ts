@@ -20,3 +20,32 @@ export function convertTemperature({
     fahrenheit,
   };
 }
+
+
+export type AnalyzeTextArgs = {
+  text: string;
+};
+
+export function analyzeText({
+  text,
+}: AnalyzeTextArgs): {
+  wordCount: number;
+  characterCount: number;
+} {
+  if (typeof text !== "string") {
+    throw new Error("Text must be a string");
+  }
+
+  const trimmedText = text.trim();
+
+  const wordCount =
+    trimmedText.length === 0
+      ? 0
+      : trimmedText.split(/\s+/).length;
+
+  return {
+    wordCount,
+    characterCount: text.length,
+  };
+}
+

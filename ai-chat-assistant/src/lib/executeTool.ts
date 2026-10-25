@@ -1,5 +1,5 @@
 
-import { convertTemperature } from "./tools";
+import { toolDefinitions } from "./toolDefinitions";
 
 type ToolCall = {
   name: string;
@@ -7,25 +7,25 @@ type ToolCall = {
 };
 
 export function executeTool(toolCall: ToolCall): string {
-  if (toolCall.name === "convertTemperature") {
-    const args: unknown = JSON.parse(toolCall.arguments);
+  const toolName = toolCall.name;
 
-    if (
-      typeof args !== "object" ||
-      args === null ||
-      !("celsius" in args) ||
-      typeof args.celsius !== "number" ||
-      !Number.isFinite(args.celsius)
-    ) {
-      throw new Error("Invalid arguments for convertTemperature");
-    }
-
-    const result = convertTemperature({
-      celsius: args.celsius,
-    });
-
-    return JSON.stringify(result);
+  if (
+    !Object.prototype.hasOwnProperty.call(
+      toolDefinitions,
+      toolName
+    )
+  ) {
+    throw new Error(`Unknown tool: ${toolName}`);
   }
 
-  throw new Error(`Unknown tool: ${toolCall.name}`);
+  const args: unknown = JSON.parse(toolCall.arguments);
+
+  const tool =
+    toolDefinitions[
+      toolName as keyof typeof toolDefinitions
+    ];
+
+  const result = tool.execute(args);
+
+  return JSON.stringify(result);
 }

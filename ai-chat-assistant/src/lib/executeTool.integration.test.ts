@@ -1,13 +1,13 @@
 
 import { describe, expect, it } from "vitest";
 import { executeTool } from "./executeTool";
-import { convertTemperatureSchema } from "./toolSchemas";
+import { toolDefinitions } from "./toolDefinitions"
 
 describe("local tool-calling workflow", () => {
   it("executes a simulated AI tool request", () => {
     // Simulate the tool request returned by an AI model.
     const simulatedToolCall = {
-      name: convertTemperatureSchema.name,
+      name:  toolDefinitions.convertTemperature.schema.name,
       arguments: JSON.stringify({ celsius: 25 }),
     };
 

@@ -41,4 +41,30 @@ describe("executeTool", () => {
       })
     ).toThrow();
   });
+
+it("executes the analyzeText tool", () => {
+  const output = executeTool({
+    name: "analyzeText",
+    arguments: JSON.stringify({
+      text: "React and Node.js",
+    }),
+  });
+
+  expect(JSON.parse(output)).toEqual({
+    wordCount: 3,
+    characterCount: 17,
+  });
+});
+
+it("rejects invalid analyzeText arguments", () => {
+  expect(() =>
+    executeTool({
+      name: "analyzeText",
+      arguments: JSON.stringify({
+        text: 123,
+      }),
+    })
+  ).toThrow("Invalid arguments for analyzeText");
+});
+
 });

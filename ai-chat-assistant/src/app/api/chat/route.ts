@@ -1,7 +1,7 @@
 
 import OpenAI from "openai";
 import { executeTool } from "../../../lib/executeTool";
-import { convertTemperatureSchema } from "../../../lib/toolSchemas";
+import { toolDefinitions } from "../../../lib/toolDefinitions";
 import type { Response as OpenAIResponse } from "openai/resources/responses/responses";
 
 const openai = new OpenAI({
@@ -10,10 +10,10 @@ const openai = new OpenAI({
 
 const MAX_TOOL_ROUNDS = 5;
 type FunctionCall = {
-  type: "function_call";
-  name: string;
-  arguments: string;
-  call_id: string;
+    type: "function_call";
+    name: string;
+    arguments: string;
+    call_id: string;
 };
 
 export async function POST(request: Request) {
@@ -41,7 +41,9 @@ export async function POST(request: Request) {
                         const stream = await openai.responses.create({
                             model: "gpt-5-mini",
                             input: currentInput,
-                            tools: [convertTemperatureSchema],
+                            tools: Object.values(toolDefinitions).map(
+                                (tool) => tool.schema
+                            ),
                             stream: true,
                         });
 
