@@ -9,6 +9,7 @@ const openai = new OpenAI({
 });
 
 const MAX_TOOL_ROUNDS = 5;
+
 type FunctionCall = {
     type: "function_call";
     name: string;
@@ -20,10 +21,7 @@ export async function POST(request: Request) {
     try {
         const { messages } = await request.json();
 
-        if (
-            !Array.isArray(messages) ||
-            messages.length === 0
-        ) {
+        if (!Array.isArray(messages) || messages.length === 0) {
             return new Response("Messages are required", {
                 status: 400,
             });
@@ -31,21 +29,38 @@ export async function POST(request: Request) {
 
         const encoder = new TextEncoder();
 
+        const tools = Object.values(toolDefinitions).map(
+            (tool) => tool.schema
+        );
+
+        // Create the first LLM stream before returning the HTTP response.
+        const initialStream = await openai.responses.create({
+            model: "gpt-5-mini",
+            input: messages,
+            tools,
+            stream: true,
+        });
+
         const readableStream = new ReadableStream({
             async start(controller) {
                 try {
                     let currentInput = messages;
                     let toolRounds = 0;
+                    let firstRound = true;
 
                     while (true) {
-                        const stream = await openai.responses.create({
-                            model: "gpt-5-mini",
-                            input: currentInput,
-                            tools: Object.values(toolDefinitions).map(
-                                (tool) => tool.schema
-                            ),
-                            stream: true,
-                        });
+                        // Reuse the initial stream on round one.
+                        // Call the LLM again only on subsequent rounds.
+                        const stream = firstRound
+                            ? initialStream
+                            : await openai.responses.create({
+                                model: "gpt-5-mini",
+                                input: currentInput,
+                                tools,
+                                stream: true,
+                            });
+
+                        firstRound = false;
 
                         let completedResponse: OpenAIResponse | null = null;
 
@@ -71,7 +86,8 @@ export async function POST(request: Request) {
 
                         const functionCalls =
                             completedResponse.output.filter(
-                                (item): item is FunctionCall => item.type === "function_call"
+                                (item): item is FunctionCall =>
+                                    item.type === "function_call"
                             );
 
                         if (functionCalls.length === 0) {
@@ -79,7 +95,9 @@ export async function POST(request: Request) {
                         }
 
                         if (toolRounds >= MAX_TOOL_ROUNDS) {
-                            throw new Error("Maximum tool rounds exceeded.");
+                            throw new Error(
+                                "Maximum tool rounds exceeded."
+                            );
                         }
 
                         toolRounds++;

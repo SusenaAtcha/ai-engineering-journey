@@ -2,30 +2,36 @@
 import { toolDefinitions } from "./toolDefinitions";
 
 type ToolCall = {
-  name: string;
-  arguments: string;
+    name: string;
+    arguments: string;
 };
 
 export function executeTool(toolCall: ToolCall): string {
-  const toolName = toolCall.name;
+    const toolName = toolCall.name;
 
-  if (
-    !Object.prototype.hasOwnProperty.call(
-      toolDefinitions,
-      toolName
-    )
-  ) {
-    throw new Error(`Unknown tool: ${toolName}`);
-  }
+    if (
+        !Object.prototype.hasOwnProperty.call(
+            toolDefinitions,
+            toolName
+        )
+    ) {
+        throw new Error(`Unknown tool: ${toolName}`);
+    }
 
-  const args: unknown = JSON.parse(toolCall.arguments);
+    let args: unknown;
 
-  const tool =
-    toolDefinitions[
-      toolName as keyof typeof toolDefinitions
-    ];
+    try {
+        args = JSON.parse(toolCall.arguments);
+    } catch {
+        throw new Error("Invalid JSON in tool arguments");
+    }
 
-  const result = tool.execute(args);
+    const tool =
+        toolDefinitions[
+        toolName as keyof typeof toolDefinitions
+        ];
 
-  return JSON.stringify(result);
+    const result = tool.execute(args);
+
+    return JSON.stringify(result);
 }
