@@ -40,6 +40,7 @@ export default function Home() {
 
     setMessages(updatedMessages);
     setIsLoading(true);
+    let assistantMessageAdded = false;
 
     try {
       const response = await fetch("/api/chat", {
@@ -68,6 +69,7 @@ export default function Home() {
 
       let assistantMessage = "";
 
+
       setMessages((currentMessages) => [
         ...currentMessages,
         {
@@ -75,6 +77,8 @@ export default function Home() {
           content: "",
         },
       ]);
+
+      assistantMessageAdded = true;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -103,14 +107,29 @@ export default function Home() {
     } catch (error) {
       console.error(error);
 
-      setMessages((currentMessages) => [
-        ...currentMessages,
-        {
-          role: "assistant",
-          content:
-            "Sorry, I couldn't generate a response. Please try again.",
-        },
-      ]);
+      const errorMessage =
+        "Sorry, I couldn't generate a response. Please try again.";
+
+      setMessages((currentMessages) => {
+        if (assistantMessageAdded) {
+          const updated = [...currentMessages];
+
+          updated[updated.length - 1] = {
+            role: "assistant",
+            content: errorMessage,
+          };
+
+          return updated;
+        }
+
+        return [
+          ...currentMessages,
+          {
+            role: "assistant",
+            content: errorMessage,
+          },
+        ];
+      });
     } finally {
       setIsLoading(false);
     }
