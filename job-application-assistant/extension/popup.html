@@ -1,0 +1,86 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Application Assistant</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 300px;
+            padding: 12px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 9px;
+            margin-top: 12px;
+            cursor: pointer;
+        }
+
+        #status {
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Job Application Assistant</h2>
+
+    <label for="firstName">First name</label>
+    <input id="firstName" autocomplete="given-name" />
+
+    <label for="middleName">Middle name (optional)</label>
+    <input id="middleName" />
+
+    <label for="lastName">Last name</label>
+    <input id="lastName" autocomplete="family-name" />
+
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="email" />
+
+    <label for="phone">Phone</label>
+    <input id="phone" type="tel" autocomplete="tel" />
+
+    <label for="linkedin">LinkedIn profile URL</label>
+    <input id="linkedin" type="url"
+           placeholder="https://www.linkedin.com/in/..." />
+
+    <label for="github">GitHub profile URL</label>
+    <input id="github" type="url"
+           placeholder="https://github.com/..." />
+
+    <label for="portfolio">Portfolio / website URL</label>
+    <input id="portfolio" type="url"
+           placeholder="https://your-portfolio.com" />
+
+    <label for="city">City</label>
+    <input id="city" autocomplete="address-level2"
+           placeholder="Hyderabad" />
+
+    <button id="save-button">Save Profile</button>
+    <button id="fill-button">Fill Application</button>
+
+    <p id="status" role="status">Ready</p>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>

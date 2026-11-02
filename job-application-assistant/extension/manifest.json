@@ -1,0 +1,19 @@
+
+{
+  "manifest_version": 3,
+  "name": "AI Job Application Assistant",
+  "version": "0.1.0",
+  "description": "Autofill job application forms using your approved profile.",
+  "permissions": ["storage", "activeTab"],
+  "action": {
+    "default_title": "Job Application Assistant",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
